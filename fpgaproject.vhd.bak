@@ -1,0 +1,43 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_arith.all;
+use ieee.std_logic_unsigned.all;
+
+entity fpgaproject is
+Port(clk,rst: In std_logic; count: Out std_logic_vector(3 downto 0));
+end fpgaproject;
+
+Architecture behave of project is
+	Signal q: std_logic_vector(3 downto 0);
+	Signal sclk, srst: std_logic;
+	Signal temp: std_logic_vector(25 downto 0);
+	begin
+		Process(clk, rst)
+		begin
+			if clk'event and clk='1' then
+				if rst='1' then
+					srst <= '1';
+					temp <= (others=>'0');
+				else
+					temp <= temp+1;
+					sclk <= temp(24);
+				if temp(25)='1' then
+					srst <='0';
+				end if;
+				end if;
+			end if;
+		end process;
+		
+		Process(sclk,srst)
+		begin
+			if srst='1' then
+				q <= "0000";
+			elsif (sclk'event and sclk='1') then
+				q <= q+1;
+			if q = "1111" then
+				q <= "0000";
+			end if;
+			end if;
+			count<=q;
+		end process;
+end behave;
